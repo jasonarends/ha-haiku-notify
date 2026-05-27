@@ -1,0 +1,27 @@
+<svg width="256" height="256" viewBox="0 0 256 256" xmlns="http://www.w3.org/2000/svg">
+  <!-- Speech bubble with tail -->
+  <path d="M 56 44
+           L 200 44
+           Q 220 44 220 64
+           L 220 168
+           Q 220 188 200 188
+           L 116 188
+           L 80 224
+           L 80 188
+           L 56 188
+           Q 36 188 36 168
+           L 36 64
+           Q 36 44 56 44 Z"
+        fill="#7C3AED"/>
+  <!-- Three text bars: 5-7-5 syllable haiku rhythm (short / long / short) -->
+  <rect x="64" y="78"  width="76"  height="14" rx="7" fill="#ffffff"/>
+  <rect x="64" y="108" width="128" height="14" rx="7" fill="#ffffff"/>
+  <rect x="64" y="138" width="76"  height="14" rx="7" fill="#ffffff"/>
+  <!-- Sparkle accent on top right (4-point star, concave sides) -->
+  <path d="M 208 52
+           C 211 62, 218 69, 228 72
+           C 218 75, 211 82, 208 92
+           C 205 82, 198 75, 188 72
+           C 198 69, 205 62, 208 52 Z"
+        fill="#FCD34D"/>
+</svg>

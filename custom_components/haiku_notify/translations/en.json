@@ -5,7 +5,7 @@
         "title": "Set up Haiku Notify",
         "description": "Create a notify.* service that rephrases messages through your Anthropic AI integration before forwarding them to an existing notify service.",
         "data": {
-          "name": "Service name (will be registered as notify.<name>)",
+          "name": "Service name (becomes notify.NAME — e.g. haiku_discord)",
           "wrapped_service": "Notify service to forward to (e.g. notify.discord_automations)",
           "ai_task_entity": "AI Task entity to use for rephrasing",
           "history_size": "Recent messages to include as context",

@@ -1,5 +1,7 @@
 # 🌀 Haiku Notify
 
+<p align="center"><img src="icon.png" alt="Haiku Notify" width="128" height="128"/></p>
+
 > Stop your Home Assistant reminders from reading like a script being recited verbatim.
 
 Drop-in replacement for any `notify.*` service. Each message is routed through your **existing Anthropic AI integration** (via `ai_task.generate_data`) along with the last few messages from the same source, so chained reminders vary phrasing naturally — while preserving every concrete data point (names, times, numbers, counters, URLs).
