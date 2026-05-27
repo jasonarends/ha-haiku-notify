@@ -1,0 +1,38 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Set up Haiku Notify",
+        "description": "Create a notify.* service that rephrases messages through your Anthropic AI integration before forwarding them to an existing notify service.",
+        "data": {
+          "name": "Service name (will be registered as notify.<name>)",
+          "wrapped_service": "Notify service to forward to (e.g. notify.discord_automations)",
+          "ai_task_entity": "AI Task entity to use for rephrasing",
+          "history_size": "Recent messages to include as context",
+          "instructions": "Rephrasing instructions sent to the AI (leave default for general use)"
+        }
+      }
+    },
+    "error": {
+      "invalid_wrapped_service": "Must look like notify.something (no extra dots)"
+    },
+    "abort": {
+      "already_configured": "This service name is already set up."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Haiku Notify options",
+        "description": "Tweak the wrapped service, AI entity, history size, or rephrasing instructions. Saving reloads the integration.",
+        "data": {
+          "name": "Service name",
+          "wrapped_service": "Notify service to forward to",
+          "ai_task_entity": "AI Task entity",
+          "history_size": "Recent messages to include as context",
+          "instructions": "Rephrasing instructions sent to the AI"
+        }
+      }
+    }
+  }
+}

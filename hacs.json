@@ -1,0 +1,7 @@
+{
+  "name": "Haiku Notify",
+  "render_readme": true,
+  "homeassistant": "2025.7.0",
+  "country": ["US"],
+  "zip_release": false
+}
