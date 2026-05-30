@@ -53,6 +53,7 @@ Same data, varied delivery — like a person nudging you, not a service printing
 | 🧠 **Uses your existing AI** | No new API key — calls `ai_task.generate_data` on an entity you already configured |
 | 🗂️ **Per-source history** | Bucketed by `data.source_id`, persisted via HA's `Store` API (survives restarts) |
 | 🖊️ **UI-editable prompt** | Tweak the rephrasing instructions from the integration's options page, no file edits |
+| 🎭 **Random personas** | Optional list of character voices (e.g. "grumpy old man", "overly enthusiastic life coach") — one is picked at random per notification |
 | 🛡️ **Fails safe** | Any AI error / timeout / empty response → forward the **original** message untouched |
 | 🔁 **Wrap many services** | Add multiple entries to wrap different notify targets (Discord, mobile, persistent, etc.) |
 
@@ -78,7 +79,7 @@ URL: https://github.com/jasonarends/ha-haiku-notify   |   Type: Integration
 Settings → Devices & Services → Add Integration → "Haiku Notify"
 ```
 
-Fill in: service name, wrapped notify service, AI Task entity, history size, (optional) custom instructions.
+Fill in: service name, wrapped notify service, AI Task entity, history size, (optional) custom instructions, and personas.
 
 ### 3. Update one automation
 
@@ -120,6 +121,8 @@ All configuration happens through the integration UI. Add an entry per `notify.*
 | **AI Task entity** | yes | Which `ai_task.*` entity to call. Use a Haiku-configured one if possible. |
 | **History size** | no (default `8`) | How many recent messages per `source_id` to include as context. Max `25`. |
 | **Instructions** | no | The rephrasing prompt. Default prefilled — tweak tone, add household-specific rules, etc. |
+| **Enable random personas** | no (default on) | Toggle persona injection on or off. |
+| **Persona list** | no | One persona per line. A random entry is picked for each notification and prepended to the instructions as a `PERSONA:` directive. |
 
 Change any of these later via **Settings → Devices & Services → Haiku Notify → Configure**. Saving reloads the integration.
 
@@ -182,12 +185,27 @@ Any keys other than `source_id` under `data:` are forwarded to the wrapped servi
 
 ### What gets sent to the AI
 
+Without personas:
 ```
 <your instructions, default or custom>
 
 Recent prior notifications from this source (oldest first):
 - <history msg 1>
 - <history msg 2>
+- ...
+
+CURRENT MESSAGE TO REPHRASE:
+<the new message>
+```
+
+With personas enabled:
+```
+PERSONA: exhausted parent on their third cup of coffee.
+
+<your instructions, default or custom>
+
+Recent prior notifications from this source (oldest first):
+- <history msg 1>
 - ...
 
 CURRENT MESSAGE TO REPHRASE:
@@ -235,6 +253,19 @@ HARD RULES:
 
 Override from the integration's **Configure** page. Common tweaks: change tone (snarky, dry, formal), add household-specific glossary, restrict emoji use.
 
+## 🎭 Default persona list
+
+```
+sassy teenage daughter who's mildly inconvenienced
+grumpy old man who just wants some peace and quiet
+overly enthusiastic life coach
+corporate middle manager addicted to synergy
+pirate, but a domestic one
+exhausted parent on their third cup of coffee
+```
+
+Edit the list from the **Configure** page — one persona per line. Toggle off entirely with the **Enable random personas** switch.
+
 * * *
 
 ## ❓ FAQ
@@ -275,7 +306,7 @@ Yes — in **Configure**, swap the AI Task entity for one that errors (or remove
 <details>
 <summary><b>Does the first message in a new <code>source_id</code> bucket get rephrased?</b></summary>
 
-No — there's no history yet, so it's forwarded unchanged. Rephrasing kicks in on the 2nd message onward.
+It depends. If **personas are enabled**, yes — the first message still goes through the AI so the persona voice is applied. If personas are **disabled**, the first message is forwarded unchanged (no history to vary against), and rephrasing kicks in on the 2nd message onward.
 
 </details>
 

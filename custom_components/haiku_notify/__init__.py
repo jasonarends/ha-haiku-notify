@@ -20,6 +20,7 @@ from __future__ import annotations
 
 import asyncio
 import logging
+import random
 from typing import Any
 
 import voluptuous as vol
@@ -36,10 +37,14 @@ from .const import (
     CONF_HISTORY_SIZE,
     CONF_INSTRUCTIONS,
     CONF_NAME,
+    CONF_PERSONAS,
+    CONF_PERSONAS_ENABLED,
     CONF_WRAPPED_SERVICE,
     DATA_SOURCE_ID,
     DEFAULT_HISTORY_SIZE,
     DEFAULT_INSTRUCTIONS,
+    DEFAULT_PERSONAS,
+    DEFAULT_PERSONAS_ENABLED,
     DOMAIN,
     STORAGE_KEY_TEMPLATE,
     STORAGE_VERSION,
@@ -74,6 +79,11 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     instructions: str = (
         config.get(CONF_INSTRUCTIONS) or DEFAULT_INSTRUCTIONS
     ).strip() or DEFAULT_INSTRUCTIONS
+    personas_enabled: bool = config.get(CONF_PERSONAS_ENABLED, DEFAULT_PERSONAS_ENABLED)
+    personas_raw: str = config.get(CONF_PERSONAS, DEFAULT_PERSONAS)
+    personas: list[str] = [
+        p.strip() for p in personas_raw.splitlines() if p.strip()
+    ]
 
     store: Store[dict[str, list[str]]] = Store(
         hass,
@@ -88,6 +98,8 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
         ai_task_entity=ai_task_entity,
         history_size=history_size,
         instructions=instructions,
+        personas_enabled=personas_enabled,
+        personas=personas,
         store=store,
         history=history,
     )
@@ -133,6 +145,8 @@ class _NotifyHandler:
         ai_task_entity: str,
         history_size: int,
         instructions: str,
+        personas_enabled: bool,
+        personas: list[str],
         store: Store[dict[str, list[str]]],
         history: dict[str, list[str]],
     ) -> None:
@@ -141,6 +155,8 @@ class _NotifyHandler:
         self.ai_task_entity = ai_task_entity
         self.history_size = history_size
         self.instructions = instructions
+        self.personas_enabled = personas_enabled
+        self.personas = personas
         self.store = store
         self.history = history
         self._lock = asyncio.Lock()
@@ -154,7 +170,8 @@ class _NotifyHandler:
         source_id = str(passthrough_data.pop(DATA_SOURCE_ID, DEFAULT_SOURCE_ID))
         recent = list(self.history.get(source_id, []))
 
-        rephrased = await self._rephrase(message, recent) if recent else message
+        should_rephrase = bool(recent) or (self.personas_enabled and self.personas)
+        rephrased = await self._rephrase(message, recent) if should_rephrase else message
 
         forward_data: dict[str, Any] = {"message": rephrased}
         if title is not None:
@@ -179,9 +196,14 @@ class _NotifyHandler:
 
     async def _rephrase(self, current: str, recent: list[str]) -> str:
         """Call ai_task to rephrase. On any failure, return the original."""
+        instructions = self.instructions
+        if self.personas_enabled and self.personas:
+            persona = random.choice(self.personas)
+            instructions = f"PERSONA: {persona}.\n\n{instructions}"
+
         history_block = "\n".join(f"- {line}" for line in recent)
         prompt = (
-            f"{self.instructions}\n\n"
+            f"{instructions}\n\n"
             f"Recent prior notifications from this source (oldest first):\n"
             f"{history_block}\n\n"
             f"CURRENT MESSAGE TO REPHRASE:\n{current}"
