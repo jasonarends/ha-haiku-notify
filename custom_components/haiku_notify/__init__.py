@@ -171,7 +171,12 @@ class _NotifyHandler:
         recent = list(self.history.get(source_id, []))
 
         should_rephrase = bool(recent) or (self.personas_enabled and self.personas)
+        _LOGGER.debug(
+            "haiku_notify [%s]: source_id=%r history=%d should_rephrase=%s",
+            self.wrapped_service, source_id, len(recent), should_rephrase,
+        )
         rephrased = await self._rephrase(message, recent) if should_rephrase else message
+        _LOGGER.debug("haiku_notify [%s]: forwarding: %r", self.wrapped_service, rephrased)
 
         forward_data: dict[str, Any] = {"message": rephrased}
         if title is not None:
@@ -212,6 +217,7 @@ class _NotifyHandler:
             f"{history_block}\n\n"
             f"CURRENT MESSAGE TO REPHRASE:\n{current}"
         )
+        _LOGGER.debug("haiku_notify: prompt sent to AI:\n%s", prompt)
 
         try:
             result = await asyncio.wait_for(
@@ -234,10 +240,12 @@ class _NotifyHandler:
             )
             return current
 
+        _LOGGER.debug("haiku_notify: raw AI response: %r", result)
         rephrased = _extract_text(result)
         if not rephrased or not rephrased.strip():
             _LOGGER.warning("ai_task returned empty text; forwarding original")
             return current
+        _LOGGER.debug("haiku_notify: rephrased to: %r", rephrased.strip())
         return rephrased.strip()
 
     async def _record(self, source_id: str, message: str) -> None:
