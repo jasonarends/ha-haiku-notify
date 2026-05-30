@@ -102,17 +102,14 @@ class HaikuNotifyConfigFlow(ConfigFlow, domain=DOMAIN):
             errors=errors,
         )
 
-    @staticmethod
+    @classmethod
     @callback
-    def async_get_options_flow(config_entry: ConfigEntry) -> OptionsFlow:
-        return HaikuNotifyOptionsFlow(config_entry)
+    def async_get_options_flow(cls, config_entry: ConfigEntry) -> OptionsFlow:
+        return HaikuNotifyOptionsFlow()
 
 
 class HaikuNotifyOptionsFlow(OptionsFlow):
     """Allow editing wrapped service / model / history size / instructions after setup."""
-
-    def __init__(self, config_entry: ConfigEntry) -> None:
-        self.config_entry = config_entry
 
     async def async_step_init(
         self, user_input: dict[str, Any] | None = None
