@@ -199,7 +199,11 @@ class _NotifyHandler:
         instructions = self.instructions
         if self.personas_enabled and self.personas:
             persona = random.choice(self.personas)
-            instructions = f"PERSONA: {persona}.\n\n{instructions}"
+            instructions = (
+                f"{instructions}\n\n"
+                f"VOICE: Write as a {persona}. "
+                f"Let the personality come through clearly — don't be generic or neutral."
+            )
 
         history_block = "\n".join(f"- {line}" for line in recent)
         prompt = (
