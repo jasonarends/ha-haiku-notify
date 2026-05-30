@@ -9,7 +9,9 @@
           "wrapped_service": "Notify service to forward to (e.g. notify.discord_automations)",
           "ai_task_entity": "AI Task entity to use for rephrasing",
           "history_size": "Recent messages to include as context",
-          "instructions": "Rephrasing instructions sent to the AI (leave default for general use)"
+          "instructions": "Rephrasing instructions sent to the AI (leave default for general use)",
+          "personas_enabled": "Enable random personas",
+          "personas": "Persona list (one per line) — a random one is picked for each notification"
         }
       }
     },
@@ -30,7 +32,9 @@
           "wrapped_service": "Notify service to forward to",
           "ai_task_entity": "AI Task entity",
           "history_size": "Recent messages to include as context",
-          "instructions": "Rephrasing instructions sent to the AI"
+          "instructions": "Rephrasing instructions sent to the AI",
+          "personas_enabled": "Enable random personas",
+          "personas": "Persona list (one per line) — a random one is picked for each notification"
         }
       }
     }

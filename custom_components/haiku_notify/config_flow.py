@@ -14,9 +14,13 @@ from .const import (
     CONF_HISTORY_SIZE,
     CONF_INSTRUCTIONS,
     CONF_NAME,
+    CONF_PERSONAS,
+    CONF_PERSONAS_ENABLED,
     CONF_WRAPPED_SERVICE,
     DEFAULT_HISTORY_SIZE,
     DEFAULT_INSTRUCTIONS,
+    DEFAULT_PERSONAS,
+    DEFAULT_PERSONAS_ENABLED,
     DOMAIN,
     MAX_HISTORY_SIZE,
 )
@@ -53,6 +57,16 @@ def _user_schema(defaults: dict[str, Any] | None = None) -> vol.Schema:
     schema[vol.Optional(
         CONF_INSTRUCTIONS,
         default=defaults.get(CONF_INSTRUCTIONS, DEFAULT_INSTRUCTIONS),
+    )] = selector.TextSelector(
+        selector.TextSelectorConfig(multiline=True),
+    )
+    schema[vol.Optional(
+        CONF_PERSONAS_ENABLED,
+        default=defaults.get(CONF_PERSONAS_ENABLED, DEFAULT_PERSONAS_ENABLED),
+    )] = selector.BooleanSelector()
+    schema[vol.Optional(
+        CONF_PERSONAS,
+        default=defaults.get(CONF_PERSONAS, DEFAULT_PERSONAS),
     )] = selector.TextSelector(
         selector.TextSelectorConfig(multiline=True),
     )
@@ -102,17 +116,14 @@ class HaikuNotifyConfigFlow(ConfigFlow, domain=DOMAIN):
             errors=errors,
         )
 
-    @staticmethod
+    @classmethod
     @callback
-    def async_get_options_flow(config_entry: ConfigEntry) -> OptionsFlow:
-        return HaikuNotifyOptionsFlow(config_entry)
+    def async_get_options_flow(cls, config_entry: ConfigEntry) -> OptionsFlow:
+        return HaikuNotifyOptionsFlow()
 
 
 class HaikuNotifyOptionsFlow(OptionsFlow):
     """Allow editing wrapped service / model / history size / instructions after setup."""
-
-    def __init__(self, config_entry: ConfigEntry) -> None:
-        self.config_entry = config_entry
 
     async def async_step_init(
         self, user_input: dict[str, Any] | None = None
